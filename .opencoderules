@@ -1,0 +1,297 @@
+# ARNÉS OPENCODE — Portal de Calificaciones
+## Leonardo Krell · IES9018 · 2026
+
+---
+
+## 1. Reglas de Negocio Inmutables
+
+- Este repositorio pertenece a la org `IES9018` con nombre `LeonardoKrell_PortalDeCalificaciones`
+- Prohibición absoluta de forks: creación directa en la organización.
+- La cátedra audita mediante script determinista (sin IA).
+
+---
+
+## 2. Flujo Spec-Driven Development (Obligatorio)
+
+### 2.1 Especificación
+- Toda funcionalidad debe estar en `SPEC.md` ANTES de codificar.
+- Cada RF (requisito funcional) es un checkbox validable: `[ ] RF-XX: descripción`
+- No-Goals explícitos evitan scope creep.
+
+### 2.2 Decisiones Arquitectónicas
+- Toda decisión técnica va en `docs/adr/ADR-XXX-titulo.md` con formato:
+  - **Contexto:** qué problema técnico resuelvo
+  - **Decisión:** qué elegí
+  - **Alternativas:** ≥2 opciones descartadas + criterios
+  - **Consecuencias:** riesgos y beneficios
+
+### 2.3 Commits y PRs
+- Commits convencionales: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`
+- PR template con checklists de calidad y trazabilidad a RFs.
+- Merge solo después de revisión + checklist completo.
+
+---
+
+## 3. Stack Tecnológico (Según SPEC.md)
+
+### Backend
+- **Lenguaje:** Python 3.10+
+- **Framework:** Django 4.2+
+- **ORM:** Django ORM (nada de raw SQL sin parameterizar)
+- **Base de datos:** SQLite (desarrollo), especificar en ADR si cambia
+
+### Frontend
+- **HTML5** válido (validar en `https://validator.w3.org/`)
+- **CSS3** (sin frameworks externos a menos que esté en SPEC.md)
+- **JavaScript vanilla** o solo si lo justificas en ADR
+
+### Testing
+- **Backend:** Django TestCase (mínimo 70% cobertura en vistas críticas)
+- **Frontend:** tests manuales documentados en `/docs/testing-manual.md`
+
+---
+
+## 4. Estructura de Carpetas (Obligatoria)
+
+```
+tu-repo/
+├── SPEC.md                              ← especificación declarativa (obligatoria)
+├── .opencoderules                       ← este archivo
+├── INSTRUCTIONS.md                      ← instrucciones extendidas (opcional)
+├── manage.py                            ← Django entry point
+├── requirements.txt                     ← dependencias exactas
+├── db.sqlite3                           ← BD (NO pushear)
+│
+├── docs/
+│   ├── adr/
+│   │   ├── ADR-001-stack-tecnologico.md
+│   │   └── ADR-template.md
+│   ├── wireframes/
+│   ├── testing-manual.md
+│
+├── portal_calificaciones/               ← proyecto Django principal
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── usuarios/                            ← app Django: autenticación
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   ├── tests.py
+│   └── templates/usuarios/
+│
+├── calificaciones/                      ← app Django: lógica de calificaciones
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   ├── tests.py
+│   ├── decorators.py
+│   ├── permissions.py
+│   ├── fixtures/
+│   └── templates/calificaciones/
+│
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 5. Estándares de Código Python
+
+### 5.1 Tipado
+```python
+# ✅ OBLIGATORIO: type hints
+from typing import Optional, List
+from django.http import HttpRequest, HttpResponse
+
+def calcular_promedio(calificaciones: List[float]) -> float:
+    return sum(calificaciones) / len(calificaciones)
+
+class EstudianteView(View):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        ...
+```
+
+### 5.2 Validación y Lógica RBAC
+```python
+# ✅ Validar en la frontera + modelo
+from django.core.exceptions import PermissionDenied
+
+class CalificacionView(View):
+    def get(self, request: HttpRequest, calificacion_id: int) -> HttpResponse:
+        calificacion = Calificacion.objects.get(id=calificacion_id)
+        
+        # Verificar permisos ANTES de usar datos
+        if request.user.rol == 'estudiante':
+            if calificacion.estudiante != request.user:
+                raise PermissionDenied("No tienes permisos para ver esto")
+        
+        return render(request, 'template.html', {'calificacion': calificacion})
+```
+
+### 5.3 Queries Eficientes (No N+1)
+```python
+# ❌ MAL: N+1 queries
+calificaciones = Calificacion.objects.all()
+for cal in calificaciones:
+    print(cal.estudiante.nombre)  # Query por cada uno
+
+# ✅ BIEN: select_related
+calificaciones = Calificacion.objects.select_related('estudiante').all()
+```
+
+### 5.4 Nombres y Organización
+- Modelos: `Usuario`, `Materia`, `Inscripcion`, `Calificacion` (PascalCase)
+- Funciones/métodos: `calcular_promedio()` (snake_case)
+- Imports: agrupados (std lib, librerías terceras, locales)
+
+---
+
+## 6. Estándares de Frontend HTML/CSS
+
+### 6.1 HTML5 Válido
+```html
+<!-- ✅ BIEN: semántica + labels + CSRF -->
+<form method="POST" action="{% url 'cargar_calificacion' %}">
+    {% csrf_token %}
+    
+    <fieldset>
+        <legend>Cargar Calificación</legend>
+        
+        <label for="nota">Nota (0-10):</label>
+        <input type="number" id="nota" name="nota" min="0" max="10" step="0.1" required>
+        
+        <button type="submit">Guardar</button>
+    </fieldset>
+</form>
+```
+
+### 6.2 CSS Responsive
+```css
+/* Mobile-first */
+.dashboard {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+```
+
+### 6.3 Accesibilidad Mínima
+- `<label>` siempre asociado a `<input>` (via `for="id"`)
+- Contraste mínimo 4.5:1 en textos críticos
+- `alt=""` en imágenes decorativas
+
+---
+
+## 7. Seguridad (Mínimo Requerido)
+
+### 7.1 Django Setup
+```python
+# settings.py
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+DEBUG = False  # NUNCA True en producción
+```
+
+### 7.2 ORM Seguro
+```python
+# ✅ BIEN: ORM previene inyección
+User.objects.filter(email=user_input)
+
+# ❌ NUNCA: raw SQL sin params
+User.objects.raw(f"SELECT * FROM users WHERE email = '{user_input}'")
+```
+
+### 7.3 Permisos en Vistas
+```python
+# ✅ Verificar siempre
+if request.user.is_authenticated and request.user.rol == 'docente':
+    # hacer algo
+else:
+    return HttpResponseForbidden("No autorizado")
+```
+
+---
+
+## 8. Testing (Mínimo)
+
+### 8.1 Tests de Autenticación
+```python
+# calificaciones/tests.py
+from django.test import TestCase, Client
+
+class RBACTestCase(TestCase):
+    def test_estudiante_no_ve_calificaciones_ajenas(self):
+        """RF-07: El estudiante NO puede ver calificaciones de otros"""
+        # Verificar que acceso es denegado
+        self.assertEqual(response.status_code, 403)
+```
+
+---
+
+## 9. Documentación Requerida
+
+- `README.md`: instrucciones setup
+- `SPEC.md`: requisitos (RF-XX y NG-XX)
+- `docs/adr/ADR-001-*.md`: decisión técnica
+- `docs/adr/ADR-template.md`: plantilla para futuros ADRs
+- Comentarios en código: solo para *por qué*, no *qué*
+
+---
+
+## 10. Workflow de IA (OpenCode)
+
+### 10.1 Qué SÍ hace el agente
+- Generar modelos Django basados en SPEC.md
+- Proponer migraciones (vos las revisás)
+- Sugerir vistas y templates
+- Escribir tests
+
+### 10.2 Qué NO hace el agente sin tu aprobación
+- Cambiar SPEC.md
+- Borrar o modificar ADRs existentes
+- Hacer deploy
+- Crear usuarios en BD sin fixtures
+
+### 10.3 Tu responsabilidad
+- Leer lo que el agente genera
+- Ejecutar y probar antes de hacer commit
+- Rechazar y pedir mejoras si no lo entendés
+- Escribir el mensaje del PR explicando QUÉ y POR QUÉ
+
+---
+
+## 11. Checklist Antes de Hacer Push
+
+```
+[ ] Ejecuté `python manage.py check`
+[ ] Ejecuté tests: `python manage.py test --verbosity=2`
+[ ] HTML válido: `https://validator.w3.org/`
+[ ] Commits convencionales: `feat:`, `fix:`, `docs:`, `test:`
+[ ] PR completo con descripción y checklist
+[ ] No pusheo .pyc, __pycache__, venv/ ni .env
+```
+
+---
+
+## 12. Ayuda y Escalation
+
+- **Error Django:** Buscá en la consola primero
+- **Bug de lógica:** Escribí un test que lo reproduzca
+- **Trancado:** Abrí un Issue en `IES9018/proyecto-adi-2026` con contexto
+- **Seguridad:** Consultá antes de hacer deploy
+
+---
+
+**Versión:** 1.0 · **Fecha:** sep 2026 · **Autor:** Leonardo Krell
