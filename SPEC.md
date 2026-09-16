@@ -68,7 +68,8 @@ Lo que explícitamente NO se construirá en esta etapa:
 - **Framework:** Django
 
 ### Frontend
-- **Tecnología:** HTML5 + CSS
+- **Tecnología:** HTML5 + CSS3
+- **Framework CSS:** Bootstrap 5 (layout responsive y componentes)
 
 ### Base de Datos
 - **Desarrollo:** SQLite

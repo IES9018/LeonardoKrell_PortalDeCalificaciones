@@ -1,0 +1,133 @@
+# ARNÉS OPENCODE — Portal de Calificaciones
+## Leonardo Krell · IES9018 · 2026
+
+---
+
+## 1. Reglas de Negocio Inmutables
+
+- Este repositorio pertenece a la org `IES9018` con nombre `LeonardoKrell_PortalDeCalificaciones`
+- Prohibición absoluta de forks: creación directa en la organización.
+- La cátedra audita mediante script determinista (sin IA).
+
+---
+
+## 2. Flujo Spec-Driven Development (Obligatorio)
+
+### 2.1 Especificación
+- Toda funcionalidad debe estar en `SPEC.md` ANTES de codificar.
+- Cada RF (requisito funcional) es un checkbox validable: `[ ] RF-XX: descripción`
+- No-Goals explícitos evitan scope creep.
+
+### 2.2 Decisiones Arquitectónicas
+- Toda decisión técnica va en `docs/adr/ADR-XXX-titulo.md` con formato:
+  - **Contexto:** qué problema técnico resuelvo
+  - **Decisión:** qué elegí
+  - **Alternativas:** ≥2 opciones descartadas + criterios
+  - **Consecuencias:** riesgos y beneficios
+
+### 2.3 Commits y PRs
+- Commits convencionales: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`
+- PR template con checklists de calidad y trazabilidad a RFs.
+- Merge solo después de revisión + checklist completo.
+
+---
+
+## 3. Stack Tecnológico (Según SPEC.md)
+
+### Backend
+- **Lenguaje:** Python 3.10+
+- **Framework:** Django 4.2+
+- **ORM:** Django ORM (nada de raw SQL sin parameterizar)
+- **Base de datos:** SQLite (desarrollo), especificar en ADR si cambia
+
+### Frontend
+- **HTML5** válido (validar en `https://validator.w3.org/`)
+- **CSS3:** Bootstrap 5 (utilizado para layout responsive y componentes)
+- **JavaScript vanilla** o solo si lo justificas en ADR
+
+### Testing
+- **Backend:** Django TestCase (mínimo 70% cobertura en vistas críticas)
+- **Frontend:** tests manuales documentados en `/docs/testing-manual.md`
+
+---
+
+## 4. Estructura de Carpetas (Obligatoria)
+
+```
+LeonardoKrell_PortalDeCalificaciones/
+├── SPEC.md
+├── README.md
+├── .opencoderules
+├── manage.py
+├── requirements.txt
+│
+├── docs/
+│   └── adr/
+│       ├── ADR-001-stack-tecnologico.md
+│       └── ADR-template.md
+│
+├── portal_calificaciones/        ← Configuración Django
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── usuarios/                     ← App: autenticación y usuarios
+│   ├── __init__.py
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   ├── tests.py
+│   ├── admin.py
+│   └── templates/
+│
+└── calificaciones/               ← App: gestión de calificaciones
+    ├── __init__.py
+    ├── models.py
+    ├── views.py
+    ├── forms.py
+    ├── urls.py
+    ├── tests.py
+    ├── decorators.py
+    ├── permissions.py
+    └── templates/
+```
+
+---
+
+## 5. Seguridad (Obligatorio)
+
+- **Autenticación:** Usar `django.contrib.auth` (nunca implementar login custom sin hash).
+- **Passwords:** Hashear con `make_password` / `check_password` (nunca guardar en texto plano).
+- **RBAC:** Control de acceso por rol mediante decoradores o `user_passes_test`.
+- **CSRF:** Habilitar `CsrfViewMiddleware` (nunca desactivar en formularios).
+- **SQL Injection:** Usar Django ORM exclusivamente (prohibido `raw()` sin parametrizar).
+- **XSS:** Usar template tags `{{ }}` y `{% %}` (nunca `|safe` sin sanitizar).
+- **Validación server-side:** Siempre validar en el backend, nunca confiar en el frontend.
+
+---
+
+## 6. Prácticas Prohibidas
+
+- ❌ **`any`** en TypeScript (si se usa): tipado estricto siempre.
+- ❌ **Dependencias no aprobadas:** toda librería nueva requiere ADR previo.
+- ❌ **Secrets Hardcodeados:** credenciales, tokens o keys en código fuente.
+- ❌ **`print()` para debugging:** usar `logging` o `console.log` solo temporal.
+- ❌ **Archivos generados por IA sin revisión:** todo output de agente debe ser leído y validado.
+- ❌ **`SELECT *` o raw SQL:** usar exclusively Django ORM.
+- ❌ **Desactivar validaciones de Django:** como `DEBUG=True` en producción.
+- ❌ **Ignorar el SPEC:** no implementar funcionalidad que no esté en un RF.
+
+---
+
+## 7. Directrices para el Agente IA
+
+- **Alcance permitido:** Solo modificar archivos dentro de las carpetas definidas en la sección 4.
+- **Tipado:** Python 3.10+ con type hints donde sea posible.
+- **Sintaxis:** PEP 8 para Python, HTML válido, CSS3 estándar.
+- **Naming:** snake_case para variables/funciones Python, kebab-case para clases CSS.
+- **Documentación:** Docstrings en funciones públicas, comentarios solo cuando la lógica lo requiera.
+- **Testing:** Todo código nuevo debe incluir al menos un test unitario.
+- **Referencia obligatoria:** Antes de implementar, leer `SPEC.md` y confirmar que el RF existe.

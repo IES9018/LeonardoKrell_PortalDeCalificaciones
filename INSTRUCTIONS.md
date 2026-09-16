@@ -7,6 +7,7 @@ El sistema permite a los docentes cargar y gestionar calificaciones y a los estu
 ## 🛠 Stack Tecnológico
 - **Lenguaje:** Python 3.10+
 - **Framework Web:** Django
+- **Frontend:** HTML5 + CSS3 + Bootstrap 5
 - **Base de Datos:** SQLite
 - Para conocer la justificación del stack y las alternativas evaluadas, consultar `docs/adr/ADR-001-stack-tecnologico.md`.
 
@@ -20,3 +21,24 @@ Cualquier modificación o generación de código realizada por la IA debe alinea
 - **Ejecutar migraciones:**
   ```bash
   python manage.py migrate
+  ```
+- **Ejecutar tests:**
+  ```bash
+  python manage.py test --verbosity=2
+  ```
+- **Levantar servidor de desarrollo:**
+  ```bash
+  python manage.py runserver
+  ```
+
+## 📁 Estructura Esperada
+- `portal_calificaciones/` — Configuración del proyecto Django
+- `usuarios/` — App de autenticación y gestión de usuarios
+- `calificaciones/` — App de carga y consulta de calificaciones
+- `docs/adr/` — Decisiones arquitectónicas registradas
+
+## ⚠️ Restricciones
+- No implementar funcionalidad que no esté en un RF del SPEC.md
+- No agregar dependencias nuevas sin ADR previo
+- No desactivar protecciones de seguridad (CSRF, validaciones, etc.)
+- Todo output de IA debe ser revisado y entendido antes de commits

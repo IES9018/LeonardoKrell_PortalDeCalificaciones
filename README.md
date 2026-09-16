@@ -144,7 +144,7 @@ Este proyecto implementa:
 - ✅ ORM seguro contra inyección SQL
 - ✅ CSRF protection en formularios
 
-Ver detalles en [.opencoderules](./.opencoderules) → Sección 7
+Ver detalles en [.opencoderules](./.opencoderules) → Sección 5
 
 ---
 
