@@ -1,5 +1,7 @@
 # SPEC-001: Leonardo Krell / Portal de Calificaciones
 
+> **Versión:** v2 | **Última actualización:** 2026-09-22
+
 ## 1. Contexto y Propósito
 
 En el IES 9-018, estudiantes y docentes necesitan un lugar centralizado para ver y gestionar calificaciones de forma clara y organizada.
@@ -74,6 +76,20 @@ Lo que explícitamente NO se construirá en esta etapa:
 ### Base de Datos
 - **Desarrollo:** SQLite
 
+### Restricciones Arquitectónicas
+
+Las siguientes restricciones están documentadas en ADRs aprobados y son de cumplimiento obligatorio:
+
+| Restricción | ADR | Detalle |
+|---|---|---|
+| Estilo arquitectónico | ADR-002 | Monolito modular con Django. No se permite fragmentar en microservicios o serverless sin ADR nuevo |
+| Persistencia | ADR-003 | SQLite + Django ORM. No se permite cambiar de DB sin ADR nuevo. Migración a PostgreSQL planificada como opción futura |
+| Stack tecnológico | ADR-001 | Python + Django + Bootstrap 5. No se permiten frameworks alternativos sin ADR nuevo |
+| Dependencias externas | ADR-002, ADR-003 | Todo framework, librería o servicio externo debe estar declarado en un ADR aprobado antes de usarlo |
+| Integridad de datos | ADR-003 | Todas las relaciones y constraints se implementan vía Django ORM (sin raw SQL) |
+
+**Diagramas de arquitectura:** Ver `docs/arquitectura/C4-contexto.md` y `docs/arquitectura/C4-contenedores.md`
+
 ---
 
 ## 5. Contratos de Datos / Tipos
@@ -122,3 +138,11 @@ class Calificacion:
     fecha_ultima_modificacion: datetime (nullable)
     observaciones: str (max 500, opcional)
     # Constraint: (estudiante, materia) es única
+
+---
+
+## 6. Changelog
+
+| Versión | Fecha | Motivo | Cambios |
+|---|---|---|---|
+| v1 → v2 | 2026-09-22 | TP2: Arquitectura Visible | Agregada sección "Restricciones Arquitectónicas" con referencias a ADR-001/002/003. Se incorporan diagramas C4 como fuente de verdad de la arquitectura. Non-Goals revisados: NG-06 mantiene (sin integraciones externas), NG-08 mantiene (sin gestión de usuarios avanzada) |

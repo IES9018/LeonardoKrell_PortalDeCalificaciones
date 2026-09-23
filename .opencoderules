@@ -62,9 +62,14 @@ LeonardoKrell_PortalDeCalificaciones/
 ├── requirements.txt
 │
 ├── docs/
-│   └── adr/
-│       ├── ADR-001-stack-tecnologico.md
-│       └── ADR-template.md
+│   ├── adr/
+│   │   ├── ADR-001-stack-tecnologico.md
+│   │   ├── ADR-002-estilo-arquitectonico.md
+│   │   ├── ADR-003-persistencia.md
+│   │   └── ADR-template.md
+│   └── arquitectura/
+│       ├── C4-contexto.md
+│       └── C4-contenedores.md
 │
 ├── portal_calificaciones/        ← Configuración Django
 │   ├── __init__.py
@@ -119,6 +124,7 @@ LeonardoKrell_PortalDeCalificaciones/
 - ❌ **`SELECT *` o raw SQL:** usar exclusively Django ORM.
 - ❌ **Desactivar validaciones de Django:** como `DEBUG=True` en producción.
 - ❌ **Ignorar el SPEC:** no implementar funcionalidad que no esté en un RF.
+- ❌ **Dependencias arquitectónicas no documentadas:** PROHIBIDO introducir frameworks, bases de datos o servicios externos que no estén declarados en un ADR aprobado. Ante duda, proponer ADR nuevo.
 
 ---
 
