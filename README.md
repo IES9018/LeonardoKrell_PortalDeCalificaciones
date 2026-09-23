@@ -20,9 +20,13 @@ Construir una plataforma simple pero bien arquitecturada donde:
 
 | Documento | Descripción |
 |-----------|-------------|
-| [SPEC.md](./SPEC.md) | Especificación formal: requisitos funcionales, non-goals y contratos de datos |
+| [SPEC.md](./SPEC.md) | Especificación formal v2: requisitos funcionales, non-goals, contratos de datos y restricciones arquitectónicas |
 | [ADR-001: Stack tecnológico](./docs/adr/ADR-001-stack-tecnologico.md) | Decisión: Django + Python + SQLite con justificación y alternativas descartadas |
-| [.opencoderules](./.opencoderules) | Arnés IA: reglas de código, estructura y seguridad |
+| [ADR-002: Estilo arquitectónico](./docs/adr/ADR-002-estilo-arquitectonico.md) | Decisión: Monolito modular con Django. Alternativas: microservicios, serverless, hexagonal |
+| [ADR-003: Persistencia](./docs/adr/ADR-003-persistencia.md) | Decisión: SQLite + Django ORM. Alternativas: PostgreSQL, MongoDB, archivos |
+| [C4 Contexto](./docs/arquitectura/C4-contexto.md) | Diagrama C4 Nivel 1: sistema como caja negra con actores y sistemas externos |
+| [C4 Contenedores](./docs/arquitectura/C4-contenedores.md) | Diagrama C4 Nivel 2: aplicaciones, bases de datos y protocolos internos |
+| [.opencoderules](./.opencoderules) | Arnés IA v2: reglas de código, estructura, seguridad y coherencia arquitectónica |
 
 ---
 
@@ -163,9 +167,11 @@ Objetivo: ≥70% cobertura en vistas críticas
 
 | ADR | Decisión |
 |-----|----------|
-| [ADR-001](./docs/adr/ADR-001-stack-tecnologico.md) | Stack: Django + Python + SQLite |
+| [ADR-001](./docs/adr/ADR-001-stack-tecnologico.md) | Stack: Django + Python + SQLite + Bootstrap 5 |
+| [ADR-002](./docs/adr/ADR-002-estilo-arquitectonico.md) | Estilo: Monolito modular con Django |
+| [ADR-003](./docs/adr/ADR-003-persistencia.md) | Persistencia: SQLite + Django ORM |
 
-Próximos ADRs vendrán en TP2 y siguientes.
+Las restricciones resultantes están registradas en [SPEC.md](./SPEC.md) → Sección 4 (Restricciones Arquitectónicas).
 
 ---
 
@@ -196,4 +202,4 @@ Tecnicatura Superior en Desarrollo de Software · IES 9-018 · 2026
 
 ---
 
-**Estado del Proyecto:** TP1 completado · Próximo: TP2 (Arquitectura Visible)
+**Estado del Proyecto:** TP2 completado · Próximo: TP3 (Sprint 2)
